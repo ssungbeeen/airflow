@@ -3,7 +3,7 @@ name: Airflow CI
 on:
   push:
     paths:
-      - 'dags/**.py'
+      - 'example_dags/**.py'
 
 jobs:
   test-dags:
