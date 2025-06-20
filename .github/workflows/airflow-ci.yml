@@ -1,0 +1,27 @@
+name: Airflow CI
+
+on:
+  push:
+    paths:
+      - 'dags/**.py'
+
+jobs:
+  test-dags:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+
+    - name: Install Airflow
+      run: |
+        pip install apache-airflow
+
+    - name: DAG syntax check
+      run: |
+        python dags/my_dag.py
