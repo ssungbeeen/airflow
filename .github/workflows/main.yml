@@ -1,0 +1,23 @@
+name: Git Config Only
+
+on:
+  workflow_dispatch:  # 수동 실행 가능
+
+jobs:
+  git_config:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Git Only Setup via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          script: |
+            echo "⭐️ Git 설정"
+            git config --global user.name "ssungbeen"
+            git config --global user.email "tjddnjs0416@naver.com"
