@@ -1,14 +1,29 @@
- name: SSH via Bastion to Airflow EC2
-  uses: appleboy/ssh-action@master
-  with:
-    host: ${{ secrets.BASTION_IP }}
-    username: ${{ secrets.BASTION_USER }}
-    key: ${{ secrets.BASTION_KEY }}
-    port: 22
-    proxy_host: ${{ secrets.TARGET_IP }}
-    proxy_username: ${{ secrets.TARGET_USER }}
-    proxy_key: ${{ secrets.TARGET_KEY }}
-    proxy_port: 22
-    script: |
-      cd /home/airflow/airflow/dags
-      git pull origin main
+name: Deploy Airflow DAGs via Bastion SSH
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: SSH via Bastion to Airflow EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.BASTION_IP }}
+          username: ${{ secrets.BASTION_USER }}
+          key: ${{ secrets.BASTION_KEY }}
+          port: 22
+          proxy_host: ${{ secrets.TARGET_IP }}
+          proxy_username: ${{ secrets.TARGET_USER }}
+          proxy_key: ${{ secrets.TARGET_KEY }}
+          proxy_port: 22
+          script: |
+            cd /root/airflow_bi/lib/python3.10/site-packages/airflow/example_dags
+            git pull origin main
