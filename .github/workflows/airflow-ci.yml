@@ -1,26 +1,14 @@
-
-on:
-  push:
-    branches:
-      - main  # main 브랜치에 push될 때 실행
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: SSH into Airflow and trigger DAG
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.AIRFLOW_HOST }}         # Airflow 서버의 IP 또는 도메인 (예: 58.226.27.226)
-          username: ${{ secrets.SSH_USERNAME }}     # 접속할 서버의 사용자 이름 (예: root)
-          key: ${{ secrets.PRIVATE_KEY }}           # GitHub Secrets에 등록된 개인 키 (-----BEGIN RSA PRIVATE KEY----- 포함한 전체)
-          port: 22
-          script: |
-            echo "접속 성공. Airflow DAG을 트리거하거나 업데이트할 수 있음"
-            cd ~/airflow/dags
-            git pull origin main
-            echo "작업 완료"
+- name: SSH via Bastion to Airflow EC2
+  uses: appleboy/ssh-action@master
+  with:
+    host: ${{ secrets.BASTION_IP }}
+    username: ${{ secrets.BASTION_USER }}
+    key: ${{ secrets.BASTION_KEY }}
+    port: 22
+    proxy_host: ${{ secrets.TARGET_IP }}
+    proxy_username: ${{ secrets.TARGET_USER }}
+    proxy_key: ${{ secrets.TARGET_KEY }}
+    proxy_port: 22
+    script: |
+      cd /home/airflow/airflow/dags
+      git pull origin main
