@@ -1,4 +1,4 @@
-- name: SSH via Bastion to Airflow EC2
+ name: SSH via Bastion to Airflow EC2
   uses: appleboy/ssh-action@master
   with:
     host: ${{ secrets.BASTION_IP }}
