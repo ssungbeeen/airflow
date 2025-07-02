@@ -1,28 +1,26 @@
-name: Airflow DAG CI
 
 on:
   push:
-    paths:
-      - 'dags/**'
-    branches: [main]
+    branches:
+      - main  # main 브랜치에 push될 때 실행
 
 jobs:
-  lint-test:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: SSH into Airflow and trigger DAG
+        uses: appleboy/ssh-action@master
         with:
-          python-version: 3.9
-
-      - name: Install dependencies
-        run: |
-          pip install flake8 apache-airflow
-
-      - name: Lint DAGs
-        run: flake8 dags/ --ignore=E501
-
-      - name: Test (Optional)
-        run: echo "pytest 등을 여기에 작성"
+          host: ${{ secrets.AIRFLOW_HOST }}         # Airflow 서버의 IP 또는 도메인 (예: 58.226.27.226)
+          username: ${{ secrets.SSH_USERNAME }}     # 접속할 서버의 사용자 이름 (예: root)
+          key: ${{ secrets.PRIVATE_KEY }}           # GitHub Secrets에 등록된 개인 키 (-----BEGIN RSA PRIVATE KEY----- 포함한 전체)
+          port: 22
+          script: |
+            echo "접속 성공. Airflow DAG을 트리거하거나 업데이트할 수 있음"
+            cd ~/airflow/dags
+            git pull origin main
+            echo "작업 완료"
