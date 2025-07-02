@@ -23,7 +23,7 @@ jobs:
           proxy_host: ${{ secrets.TARGET_IP }}
           proxy_username: ${{ secrets.TARGET_USER }}
           proxy_key: ${{ secrets.TARGET_KEY }}
-          proxy_port: 3389
+          proxy_port: 22
           script: |
             cd /root/airflow_bi/lib/python3.10/site-packages/airflow/example_dags
             git pull origin main
