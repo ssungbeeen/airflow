@@ -1,16 +1,53 @@
-name: remote ssh command
-on: [push]
-jobs:
+name: Airflow CI/CD via REST API
 
-  build:
-    name: Build
+on:
+  push:
+    paths:
+      - 'dags/**'
+    branches:
+      - main
+
+jobs:
+  test-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.AIRFLOW_HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
-        script: whoami
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install apache-airflow flake8 requests
+
+      - name: Lint DAGs
+        run: |
+          flake8 dags/ --ignore=E501
+
+      - name: Run tests
+        run: |
+          # pytest 등 테스트 명령어 작성
+          echo "테스트 스크립트 작성"
+
+      - name: Upload DAG files to Airflow via REST API
+        env:
+          AIRFLOW_API_URL: ${{ secrets.AIRFLOW_API_URL }}
+          AIRFLOW_USERNAME: ${{ secrets.AIRFLOW_USERNAME }}
+          AIRFLOW_PASSWORD: ${{ secrets.AIRFLOW_PASSWORD }}
+        run: |
+          # 예시로 requests를 써서 DAG 업로드 (구체 API는 Airflow REST 문서 참고)
+          python -c "
+import os
+import requests
+from base64 import b64encode
+
+api_url = os.environ['AIRFLOW_API_URL'].rstrip('/')
+username = os.environ['AIRFLOW_USERNAME']
+password = os.environ['AIRFLOW_PASSWORD']
+
+auth = (username, password)
