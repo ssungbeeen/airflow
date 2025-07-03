@@ -17,7 +17,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: 127.0.0.1          # Runner가 Airflow 서버와 동일 머신이면 localhost
-          username: githubrunner    # Airflow 서버 사용자명
+          username: root    # Airflow 서버 사용자명
           port: 2222                # SSH 포트, 기본 22 또는 맞게 수정
           key: ${{ secrets.AIRFLOW_SSH_KEY }}  # 비밀키 (Runner 머신에 SSH 접근 가능해야 함)
           script: |
