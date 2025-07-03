@@ -1,18 +1,10 @@
-name: SSH Connection Test
+name: Test Self-Hosted Runner
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
 
 jobs:
-  test-ssh:
+  test:
     runs-on: self-hosted
     steps:
-      - name: SSH 접속 테스트
-        uses: appleboy/ssh-action@v1
-        with:
-          host: 58.226.27.226
-          username: root
-          port: 2222
-          key: ${{ secrets.AIRFLOW_SSH_KEY }}
-          script: |
-            echo "SSH 접속 성공!"
-            hostname
+      - run: echo "🎉 Self-hosted runner is working!"
