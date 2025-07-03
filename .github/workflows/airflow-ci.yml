@@ -16,7 +16,7 @@ jobs:
     - name: Deploy via SSH
       uses: appleboy/ssh-action@v1.0.0
       with:
-        host: 172.31.243.226
+        host: 58.226.27.226
         username: root
         port: 2222
         key: ${{ secrets.AIRFLOW_SSH_KEY }}
