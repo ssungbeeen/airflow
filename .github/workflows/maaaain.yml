@@ -1,1 +1,22 @@
+# .github/workflows/ssh-test.yml
 
+name: SSH Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-ssh:
+    runs-on: self-hosted
+
+    steps:
+      - name: Test SSH connection
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 127.0.0.1
+          username: root
+          port: 2222
+          key: ${{ secrets.AIRFLOW_SSH_KEY }}
+          script: |
+            echo "✅ SSH 접속 성공!"
+            hostname
