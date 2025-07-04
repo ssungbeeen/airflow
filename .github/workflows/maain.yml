@@ -1,27 +1,22 @@
-name: Deploy Airflow DAGs
+# .github/workflows/ssh-test.yml
+
+name: SSH Test
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  test-ssh:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Pull latest DAGs & restart Airflow
+      - name: Test SSH connection
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: 127.0.0.1          # Runner와 Airflow가 같은 서버일 때 localhost
-          username: root           # SSH 가능한 사용자
+          host: 127.0.0.1
+          username: root
           port: 2222
           key: ${{ secrets.AIRFLOW_SSH_KEY }}
           script: |
-            cd /root/airflow/dags
-            git pull origin main
-            sudo systemctl restart airflow-scheduler
-            sudo systemctl restart airflow-webserver
+            echo "✅ SSH 접속 성공!"
+            hostname
