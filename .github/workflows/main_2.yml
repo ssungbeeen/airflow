@@ -18,12 +18,15 @@ jobs:
           echo "📂 GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           ls -al $GITHUB_WORKSPACE/dags
 
+
+
+
       - name: Copy DAGs to mounted volume
         run: |
-          mkdir -p ./dags
 
-          cp -r $GITHUB_WORKSPACE/airflow/dags/* /root/airflow/dags/
 
+          ls /home/githubrunner/airflow/dags
+          cp -r /home/githubrunner/airflow/dags/* /root/airflow/dags/
       - name: Restart Airflow
         run: |
           docker restart sungbeen-airflow-webserver-1
