@@ -13,11 +13,17 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Copy DAGs to Docker mount (./dags)
+      - name: Print workspace & check DAGs
         run: |
+          echo "📂 GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          ls -al $GITHUB_WORKSPACE/dags
+
+      - name: Copy DAGs to mounted volume
+        run: |
+          mkdir -p ./dags
           cp -r $GITHUB_WORKSPACE/dags/* ./dags/
 
-      - name: Restart Airflow containers
+      - name: Restart Airflow
         run: |
           docker restart sungbeen-airflow-webserver-1
           docker restart sungbeen-airflow-scheduler-1
