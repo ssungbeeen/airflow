@@ -15,15 +15,17 @@ jobs:
         with:
           clean: false
 
+      - name: Copyy DAGs to mounted volume
+        run: |
+          ls /home/githubrunner/airflow/dags
+          sudo cp -r /home/githubrunner/airflow/dags/* /root/airflow/dags/
+
+
+
       - name: Fix permissions for .git folder
         run: |
           sudo chown -R githubrunner:githubrunner $GITHUB_WORKSPACE
 
-
-      - name: Check ownership and permissions
-        run: |
-          ls -ld $GITHUB_WORKSPACE/airflow/dags/.git
-          ls -lR $GITHUB_WORKSPACE/airflow/dags/.git | head -20
 
       - name: Set up Python
         uses: actions/setup-python@v4
