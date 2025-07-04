@@ -1,0 +1,23 @@
+name: Deploy Airflow DAGs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Copy DAGs to Docker mount (./dags)
+        run: |
+          cp -r $GITHUB_WORKSPACE/dags/* ./dags/
+
+      - name: Restart Airflow containers
+        run: |
+          docker restart sungbeen-airflow-webserver-1
+          docker restart sungbeen-airflow-scheduler-1
