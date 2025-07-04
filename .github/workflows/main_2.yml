@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          clean: false
 
       - name: Print workspace & check DAGs
         run: |
