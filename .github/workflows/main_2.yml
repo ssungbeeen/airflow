@@ -15,6 +15,11 @@ jobs:
         with:
           clean: false
 
+      - name: Fix permissions for .git folder
+        run: |
+          sudo chown -R githubrunner:githubrunner $GITHUB_WORKSPACE
+
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
