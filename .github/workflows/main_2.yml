@@ -28,7 +28,7 @@ jobs:
 
 
           ls /home/githubrunner/airflow/dags
-          cp -r /home/githubrunner/airflow/dags/* /root/airflow/dags/
+          sudo cp -r /home/githubrunner/airflow/dags/* /root/airflow/dags/
       - name: Restart Airflow
         run: |
           docker restart sungbeen-airflow-webserver-1
