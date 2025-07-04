@@ -20,10 +20,19 @@ jobs:
           sudo chown -R githubrunner:githubrunner $GITHUB_WORKSPACE
 
 
+      - name: Check ownership and permissions
+        run: |
+          ls -ld $GITHUB_WORKSPACE/airflow/dags/.git
+          ls -lR $GITHUB_WORKSPACE/airflow/dags/.git | head -20
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.8'  # Airflow 버전에 맞는 Python 버전으로 변경 가능
+
+
+
+
 
       - name: Install dependencies
         run: |
