@@ -1,0 +1,27 @@
+name: Deploy Airflow DAGs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Pull latest DAGs & restart Airflow
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 127.0.0.1          # Runner와 Airflow가 같은 서버일 때 localhost
+          username: root           # SSH 가능한 사용자
+          port: 2222
+          key: ${{ secrets.AIRFLOW_SSH_KEY }}
+          script: |
+            cd /root/airflow/dags
+            git pull origin main
+            sudo systemctl restart airflow-scheduler
+            sudo systemctl restart airflow-webserver
