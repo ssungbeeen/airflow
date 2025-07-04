@@ -25,5 +25,5 @@ jobs:
             cd /root/airflow/dags
             git pull origin main
             sudo systemctl restart airflow-scheduler || true
-            sudo systemctl restart airflow-webserver || true
-            echo "✅ Deployment complete"            
+            sudo systemctl restart airflow-webserver || true    
+          debug: true   # <-- 이 줄 추가    
