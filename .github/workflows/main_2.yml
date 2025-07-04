@@ -1,4 +1,4 @@
-name: Deploy Airflow DAGs
+name: Deploy Airflow DAGs with Test & Lint
 
 on:
   push:
@@ -15,20 +15,34 @@ jobs:
         with:
           clean: false
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'  # Airflow 버전에 맞는 Python 버전으로 변경 가능
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint pytest
+
+      - name: Lint DAGs (pylint)
+        run: |
+          pylint $GITHUB_WORKSPACE/dags/**/*.py || true  # lint 오류도 무시하고 진행
+
+      - name: Test DAG syntax (pytest)
+        run: |
+          pytest --maxfail=1 --disable-warnings -q $GITHUB_WORKSPACE/tests/ || true
+
       - name: Print workspace & check DAGs
         run: |
           echo "📂 GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           ls -al $GITHUB_WORKSPACE/dags
 
-
-
-
       - name: Copy DAGs to mounted volume
         run: |
-
-
           ls /home/githubrunner/airflow/dags
           sudo cp -r /home/githubrunner/airflow/dags/* /root/airflow/dags/
+
       - name: Restart Airflow
         run: |
           docker restart sungbeen-airflow-webserver-1
