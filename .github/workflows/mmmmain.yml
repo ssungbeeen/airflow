@@ -17,5 +17,5 @@ jobs:
           
       - name: Restart Airflow in Docker
         run: |
-          docker restart airflow-webserver
-          docker restart airflow-scheduler
+          sungbeen-airflow-webserver-1
+          sungbeen-airflow-scheduler-1
