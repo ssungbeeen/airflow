@@ -1,4 +1,4 @@
-name: Deploy Airflow DAGs
+name: Deploy Airflow DAGs with Test & Lint & Commit
 
 on:
   push:
@@ -12,12 +12,57 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          clean: false
 
-      - name: Copy DAGs to Docker mount (./dags)
+      - name: Configure Git
         run: |
-          cp -r $GITHUB_WORKSPACE/dags/* ./dags/
+          git config user.name "ssungbeen"
+          git config user.email "actions@github.com"
 
-      - name: Restart Airflow containers
+      - name: Copy DAGs to mounted volume
+        run: |
+          ls /home/githubrunner/airflow/dags
+          sudo cp -r /home/githubrunner/airflow/dags/* /root/airflow/dags/
+
+      - name: Fix permissions for .git folder
+        run: |
+          sudo chown -R githubrunner:githubrunner $GITHUB_WORKSPACE
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint pytest
+
+      - name: Lint DAGs (pylint)
+        run: |
+          pylint $GITHUB_WORKSPACE/dags/**/*.py || true
+
+      - name: Test DAG syntax (pytest)
+        run: |
+          pytest --maxfail=1 --disable-warnings -q $GITHUB_WORKSPACE/tests/ || true
+
+      - name: Print workspace & check DAGs
+        run: |
+          echo "📂 GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          ls -al $GITHUB_WORKSPACE/dags
+
+      - name: Commit and push changes
+        run: |
+          git add .
+          git diff --cached --quiet || git commit -m "Auto update DAGs via CI"
+          git push origin main
+        env:
+          GIT_SSH_COMMAND: 'ssh -i /path/to/private_key -o StrictHostKeyChecking=no'
+          # 또는 아래처럼 GITHUB_TOKEN 쓸 수도 있음 (이 경우 https 주소로 푸시 필요)
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Restart Airflow
         run: |
           docker restart sungbeen-airflow-webserver-1
           docker restart sungbeen-airflow-scheduler-1
