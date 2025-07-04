@@ -21,7 +21,8 @@ jobs:
       - name: Copy DAGs to mounted volume
         run: |
           mkdir -p ./dags
-          cp -r $GITHUB_WORKSPACE/dags/* ./dags/
+
+          cp -r $GITHUB_WORKSPACE/airflow/dags/* /root/airflow/dags/
 
       - name: Restart Airflow
         run: |
