@@ -14,11 +14,8 @@ jobs:
       - name: Copy DAGs
         run: |
           cp -r $GITHUB_WORKSPACE/dags/* /root/airflow/dags/
-
-      - name: Restart Airflow (without systemctl)
+          
+      - name: Restart Airflow in Docker
         run: |
-          pkill -f "airflow webserver" || true
-          pkill -f "airflow scheduler" || true
-          nohup airflow webserver --port 8080 > ~/airflow-webserver.log 2>&1 &
-          nohup airflow scheduler > ~/airflow-scheduler.log 2>&1 &
-
+          docker restart airflow-webserver
+          docker restart airflow-scheduler
