@@ -20,7 +20,6 @@ jobs:
         run: |
           git config user.name "ssungbeen"
           git config user.email "actions@github.com"
-
       - name: Copy DAGs to mounted volume
         run: |
           ls /home/githubrunner/airflow/dags
@@ -29,7 +28,6 @@ jobs:
       - name: Fix permissions for .git folder
         run: |
           sudo chown -R githubrunner:githubrunner $GITHUB_WORKSPACE
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -53,6 +51,16 @@ jobs:
           echo "📂 GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           ls -al $GITHUB_WORKSPACE/dags
 
+
+      - name: Debug git files before commit
+        run: |
+          echo "Files under GITHUB_WORKSPACE:"
+          ls -al $GITHUB_WORKSPACE/dags/
+          git status
+          git diff --cached --name-only
+
+
+
       - name: Commit and push changes
         env:
           GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
@@ -63,7 +71,6 @@ jobs:
           git add .
           git diff --cached --quiet || git commit -m "Auto update DAGs via CI"
           git push origin main
-
       - name: Restart Airflow
         run: |
           docker restart sungbeen-airflow-webserver-1
