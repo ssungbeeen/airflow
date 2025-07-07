@@ -75,3 +75,10 @@ jobs:
         run: |
           docker restart sungbeen-airflow-webserver-1
           docker restart sungbeen-airflow-scheduler-1
+
+      - name: Notify failure on Telegram
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d text="❌ Airflow 배포 실패: GitHub Actions에서 오류가 발생했습니다."          
