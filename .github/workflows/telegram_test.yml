@@ -67,4 +67,4 @@ jobs:
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d text="🚨 Airflow CI/CD 실패 알림: Deploy 작업이 실패했습니다 (브랜치: main)"
+            -d text="🚨 Airflow CI/CD 실패 알림: Deploy 작업이 실패했습니다"
