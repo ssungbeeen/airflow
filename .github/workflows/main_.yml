@@ -1,0 +1,67 @@
+name: Deploy Airflow DAGs with Test & Lint & Commit
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false   # 이게 있어야 GIT_TOKEN 방식이 작동함
+          clean: false
+
+      - name: Configure Git
+        run: |
+          git config user.name "ssungbeen"
+          git config user.email "actions@github.com"
+      - name: Copy DAGs to mounted volume
+        run: |
+          ls /home/githubrunner/airflow/dags
+          sudo cp -r /home/githubrunner/airflow/dags/* /root/airflow/dags/
+      - name: Fix permissions for .git folder
+        run: |
+          sudo chown -R githubrunner:githubrunner $GITHUB_WORKSPACE
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint pytest
+      - name: Lint DAGs (pylint)
+        run: |
+          pylint $GITHUB_WORKSPACE/dags/**/*.py 
+      - name: Test DAG syntax (pytest)
+        run: |
+          pytest --maxfail=1 --disable-warnings -q $GITHUB_WORKSPACE/tests/ 
+      - name: Print workspace & check DAGs
+        run: |
+          echo "📂 GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          ls -al $GITHUB_WORKSPACE/dags
+      - name: Debug git files before commit
+        run: |
+          echo "Files under GITHUB_WORKSPACE:"
+          ls -al $GITHUB_WORKSPACE/dags/
+          git status
+          git diff --cached --name-only
+      - name: Commit and push changes
+        env:
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+        run: |
+          git config --global user.name "ssungbeen"
+          git config --global user.email "actions@github.com"
+          git remote set-url origin https://x-access-token:${GIT_TOKEN}@github.com/ssungbeeen/airflow.git
+          git add .
+          git diff --cached --quiet || git commit -m "Auto update DAGs CI/CD"
+          git push origin main
+      - name: Restart Airflow
+        run: |
+          docker restart sungbeen-airflow-scheduler-1
